@@ -3,7 +3,7 @@ package com.mycom.es.core.first;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
@@ -26,9 +26,9 @@ public class EmployeeAggrApp {
 
         TransportClient client = new PreBuiltTransportClient(settings)
                 .addTransportAddress(
-                        new InetSocketTransportAddress(
+                        new TransportAddress(
                                 InetAddress.getByName(
-                                        "localhost"
+                                        "hadoop102"
                                 ), 9300
                         )
                 );
@@ -50,16 +50,17 @@ public class EmployeeAggrApp {
 
         Map<String, Aggregation> aggrMap = searchResponse.getAggregations().asMap();
         StringTerms groupByCountry = (StringTerms)aggrMap.get("group_by_country");
+        Iterator<StringTerms.Bucket> groupByCountryBucketIterator = groupByCountry.getBuckets().iterator();
 
-        Iterator<Terms.Bucket> groupByCountryBucketIterator = groupByCountry.getBuckets().iterator();
+
         while (groupByCountryBucketIterator.hasNext()){
-            Terms.Bucket groupByCountryBucket = groupByCountryBucketIterator.next();
+            StringTerms.Bucket groupByCountryBucket = groupByCountryBucketIterator.next();
             System.out.println(groupByCountryBucket.getKey()
             +":"+groupByCountryBucket.getDocCount());
 
             Histogram groupByJoinDate = (Histogram) groupByCountryBucket.getAggregations().asMap().get("group_by_join_date");
+            Iterator<? extends Histogram.Bucket> groupByJoinDateBucketIterator = groupByJoinDate.getBuckets().iterator();
 
-            Iterator<Histogram.Bucket> groupByJoinDateBucketIterator = groupByJoinDate.getBuckets().iterator();
             while (groupByJoinDateBucketIterator.hasNext()){
                 Histogram.Bucket groupByJoinDateBucket = groupByJoinDateBucketIterator.next();
                 System.out.println(groupByJoinDateBucket.getKey() + ":" + groupByJoinDateBucket.getDocCount());

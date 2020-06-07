@@ -3,7 +3,7 @@ package com.mycom.es.core.first;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -19,8 +19,8 @@ public class EmployeeSearchApp {
 
         TransportClient client = new PreBuiltTransportClient(settings)
                 .addTransportAddress(
-                        new InetSocketTransportAddress(
-                                InetAddress.getByName("localhost"),
+                        new TransportAddress(
+                                InetAddress.getByName("hadoop102"),
                                 9300
                         )
                 );

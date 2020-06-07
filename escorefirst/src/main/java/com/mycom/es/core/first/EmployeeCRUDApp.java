@@ -7,7 +7,8 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.BoundTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
@@ -24,17 +25,20 @@ public class EmployeeCRUDApp {
                 .build();
 
         TransportClient client = new PreBuiltTransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(
-                        InetAddress.getByName("localhost")
-                        , 9300
-                ));
+                .addTransportAddress(
+                        new TransportAddress(
+                                InetAddress.getByName(
+                                        "hadoop102"
+                                ), 9300
+                        )
+                );
 
 
-        createEmployee(client);
+//        createEmployee(client);
 //        getEmployee(client);
 
 //        updateEmployee(client);
-//        deleteEmployee(client);
+        deleteEmployee(client);
 
 
         client.close();
@@ -60,14 +64,14 @@ public class EmployeeCRUDApp {
 
     private static void getEmployee(TransportClient client)
         throws Exception{
-        GetResponse response = client.prepareGet("company", "employee", "1")
+        GetResponse response = client.prepareGet("company", "employee", "2")
                 .get();
         System.out.println(response.getSourceAsString());
     }
 
     //修改员工信息
     private static void updateEmployee(TransportClient client) throws Exception{
-        UpdateResponse response = client.prepareUpdate("company", "employee", "1")
+        UpdateResponse response = client.prepareUpdate("company", "employee", "2")
                 .setDoc(XContentFactory.jsonBuilder()
                         .startObject()
                         .field("position", "technique manager")
@@ -79,7 +83,7 @@ public class EmployeeCRUDApp {
 
     //删除员工信息
     private static void deleteEmployee(TransportClient client) {
-        DeleteResponse response = client.prepareDelete("company","employee", "1").get();
+        DeleteResponse response = client.prepareDelete("company","employee", "2").get();
         System.out.println(response.getResult());
     }
 }
